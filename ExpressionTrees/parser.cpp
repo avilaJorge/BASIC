@@ -47,9 +47,14 @@ Expression* readT(TokenScanner& scanner) {
 }
 
 int precedence(std::string token) {
-	if (token == "=") return 1;
+	//if (token == "=") return 1; REMOVED: Since BASIC does not allow embedded assignments
 	if (token == "+" || token == "-") return 2;
 	if (token == "*" || token == "/") return 3;
 	return 0;
+
+}
+
+Statement* parseStatement(TokenScanner& scanner)
+{
 
 }

@@ -10,6 +10,7 @@
 
 #include <string>
 #include "statement.h"
+#include <map>
 using namespace std;
 
 /*
@@ -138,7 +139,8 @@ public:
 private:
 
 // Fill this in with whatever types and instance variables you need
-
+	map<int, string> strings_;
+	map<int, Statement*> statements_;
 };
 
 #endif

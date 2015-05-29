@@ -13,12 +13,14 @@
 #include <string>
 //#include "console.h"
 #include "exp.h"
-#include "parser.h"
+//#include "parser.h"
 #include "program.h"
 #include "tokenscanner.h"
 #include "simpio.h"
 #include "strlib.h"
+#include "error.h"
 using namespace std;
+
 
 /* Function prototypes */
 
@@ -57,9 +59,39 @@ void processLine(string line, Program & program, EvalState & state) {
    TokenScanner scanner;
    scanner.ignoreWhitespace();
    scanner.scanNumbers();
+   scanner.scanStrings();
    scanner.setInput(line);
-   Expression *exp = parseExp(scanner);
-   int value = 0;// exp->eval(state);
-   cout << value << endl;
-   delete exp;
+   //Expression *exp = parseExp(scanner);
+   //int value = exp->eval(state);
+   //cout << getLineNumber(line) << endl;
+   //delete exp;
+   string token = scanner.nextToken();
+   if (scanner.getTokenType(token) == WORD)
+   {
+	   if (token == "LIST")
+	   {
+		   if (program.getFirstLineNumber() != -1)
+		   {
+			   int lineNumber = program.getFirstLineNumber();
+			   while (lineNumber != 0)
+			   {
+				   cout << program.getSourceLine(lineNumber) << endl;
+				   lineNumber = program.getNextLineNumber(lineNumber);
+			   }
+		   }
+	   }
+	   else if (token == "CLEAR")
+	   {
+		   program.clear();
+	   }
+   }
+   else if (scanner.getTokenType(token) == NUMBER)
+   {
+	   if (scanner.hasMoreTokens())
+		   program.addSourceLine(stoi(token), line);
+	   else
+		   program.removeSourceLine(stoi(token));
+   }
+   else
+	   error("Invalid input");
 }

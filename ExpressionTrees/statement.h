@@ -12,7 +12,7 @@
 #ifndef _statement_h
 #define _statement_h
 
-#include "evalstate.h"
+//#include "evalstate.h"
 #include "exp.h"
 
 /*
@@ -74,5 +74,63 @@ public:
  * an Expression object), the class implementation must also
  * specify its own destructor method to free that memory.
  */
+
+class PrintStmt : public Statement
+{
+public:
+	PrintStmt(TokenScanner& scanner);
+	virtual ~PrintStmt();
+	virtual void execute(EvaluationContext& context);
+private:
+	Expression *exp_;
+};
+
+class RemStmt : public Statement
+{
+public:
+	RemStmt(TokenScanner& scanner);
+	virtual ~RemStmt() {}
+	virtual void execute(EvaluationContext& context) {}
+private:
+	string comment_;
+};
+
+class LetStmt : public Statement
+{
+public:
+	LetStmt(TokenScanner& scanner);
+	virtual ~LetStmt();
+	virtual void execute(EvaluationContext& context);
+private:
+	Expression *exp_;
+	string name_;
+};
+
+class InputStmt : public Statement
+{
+public:
+	InputStmt(TokenScanner& scanner);
+	virtual ~InputStmt();
+	virtual void execute(EvaluationContext& context);
+private:
+	Expression *exp_;
+	string name_;
+	string input_;
+};
+
+class GotoStmt : public Statement
+{
+
+};
+
+class IfStmt : public Statement
+{
+
+};
+
+class EndStmt : public Statement
+{
+
+};
 
 #endif

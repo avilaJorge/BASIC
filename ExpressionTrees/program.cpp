@@ -23,32 +23,66 @@ Program::~Program() {
 
 void Program::clear() {
    // Replace this stub with your own code
+	strings_.clear();
+	statements_.clear();
 }
 
 void Program::addSourceLine(int lineNumber, string line) {
    // Replace this stub with your own code
+	if (strings_.find(lineNumber) == strings_.end())
+	{
+		strings_.emplace(lineNumber, line);
+		//TODO: Figure out how to emplace a Statement in statements_
+	}
+	else
+		strings_.find(lineNumber)->second = line;
+	
 }
 
 void Program::removeSourceLine(int lineNumber) {
    // Replace this stub with your own code
+	strings_.erase(strings_.find(lineNumber));
+	//statements_.erase(statements_.find(lineNumber));
 }
 
 string Program::getSourceLine(int lineNumber) {
-   return "";    // Replace this stub with your own code
+   // Replace this stub with your own code
+	auto it = strings_.find(lineNumber);
+	if (it != strings_.end())
+		return it->second;
+	else
+		return "";
 }
 
 void Program::setParsedStatement(int lineNumber, Statement *stmt) {
    // Replace this stub with your own code
+	statements_.emplace(lineNumber, stmt);
+	//TODO:
+	//strings_.emplace(lineNumber, stmt->toString());
 }
 
 Statement *Program::getParsedStatement(int lineNumber) {
-   return NULL;  // Replace this stub with your own code
+   // Replace this stub with your own code
+	auto it = statements_.find(lineNumber);
+	if (it != statements_.end())
+		return it->second;
+	else
+		return NULL;
 }
 
 int Program::getFirstLineNumber() {
-   return 0;     // Replace this stub with your own code
+	// Replace this stub with your own code
+	if (!strings_.empty())
+		return strings_.begin()->first;
+	else
+		return -1;     
 }
 
 int Program::getNextLineNumber(int lineNumber) {
-   return 0;     // Replace this stub with your own code
+	// Replace this stub with your own code
+	auto it = strings_.upper_bound(lineNumber);
+	if (it != strings_.end())
+		return it->first;
+	else
+		return 0;
 }
