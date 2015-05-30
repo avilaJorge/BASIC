@@ -60,7 +60,7 @@ public:
  * controlling the operation of the interpreter.
  */
 
-   virtual void execute(EvalState & state) = 0;
+   virtual void execute(EvaluationContext& context) = 0;
 
 };
 
@@ -92,7 +92,7 @@ public:
 	virtual ~RemStmt() {}
 	virtual void execute(EvaluationContext& context) {}
 private:
-	string comment_;
+	std::string comment_;
 };
 
 class LetStmt : public Statement
@@ -103,7 +103,7 @@ public:
 	virtual void execute(EvaluationContext& context);
 private:
 	Expression *exp_;
-	string name_;
+	std::string name_;
 };
 
 class InputStmt : public Statement
@@ -114,23 +114,40 @@ public:
 	virtual void execute(EvaluationContext& context);
 private:
 	Expression *exp_;
-	string name_;
-	string input_;
+	std::string name_;
+	std::string input_;
 };
 
 class GotoStmt : public Statement
 {
-
+public:
+	GotoStmt(TokenScanner& scanner);
+	virtual ~GotoStmt();
+	virtual void execute(EvaluationContext& context);
+private:
+	int lineNumber_;
 };
 
 class IfStmt : public Statement
 {
-
+public:
+	IfStmt(TokenScanner& scanner);
+	virtual ~IfStmt();
+	virtual void execute(EvaluationContext& context);
+private:
+	Expression *exp1_;
+	Expression *exp2_;
+	int lineNumber_;
+	std::string operator_;
+	bool result_;
 };
 
 class EndStmt : public Statement
 {
-
+public:
+	EndStmt(TokenScanner& scanner) {}
+	virtual ~EndStmt() {}
+	virtual void execute(EvaluationContext& context);
 };
 
 #endif

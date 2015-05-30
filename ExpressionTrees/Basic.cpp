@@ -13,7 +13,7 @@
 #include <string>
 //#include "console.h"
 #include "exp.h"
-//#include "parser.h"
+#include "parser.h"
 #include "program.h"
 #include "tokenscanner.h"
 #include "simpio.h"
@@ -24,17 +24,17 @@ using namespace std;
 
 /* Function prototypes */
 
-void processLine(string line, Program & program, EvalState & state);
+void processLine(string line, Program & program, EvaluationContext& context);
 
 /* Main program */
 
 int main() {
-   EvalState state;
+	EvaluationContext context;
    Program program;
    cout << "Stub implementation of BASIC" << endl;
    while (true) {
       try {
-         processLine(getLine(), program, state);
+         processLine(getLine(), program, context);
       } catch (ErrorException & ex) {
          cerr << "Error: " << ex.getMessage() << endl;
       }
@@ -55,7 +55,7 @@ int main() {
  * or one of the BASIC commands, such as LIST or RUN.
  */
 
-void processLine(string line, Program & program, EvalState & state) {
+void processLine(string line, Program & program, EvaluationContext& context) {
    TokenScanner scanner;
    scanner.ignoreWhitespace();
    scanner.scanNumbers();
@@ -73,7 +73,7 @@ void processLine(string line, Program & program, EvalState & state) {
 		   if (program.getFirstLineNumber() != -1)
 		   {
 			   int lineNumber = program.getFirstLineNumber();
-			   while (lineNumber != 0)
+			   while (lineNumber != -1)
 			   {
 				   cout << program.getSourceLine(lineNumber) << endl;
 				   lineNumber = program.getNextLineNumber(lineNumber);
@@ -84,13 +84,38 @@ void processLine(string line, Program & program, EvalState & state) {
 	   {
 		   program.clear();
 	   }
+	   else if (token == "RUN")
+	   {
+		   int currentLine = program.getFirstLineNumber();
+		   context.setCurrentLine(currentLine);
+		   if (currentLine != -1)
+		   {
+			   while (currentLine != -1)
+			   {
+				   program.getParsedStatement(currentLine)->execute(context);
+				   if (currentLine == context.getCurrentLine())
+				   {
+					   context.setCurrentLine(program.getNextLineNumber(currentLine));
+					   currentLine = context.getCurrentLine();
+				   }
+				   else
+					   currentLine = context.getCurrentLine();
+			   }
+		   }
+	   }
    }
    else if (scanner.getTokenType(token) == NUMBER)
    {
+	   int lineNumber = stoi(token);
 	   if (scanner.hasMoreTokens())
-		   program.addSourceLine(stoi(token), line);
+	   {
+		   program.setParsedStatement(lineNumber, parseStatement(scanner));
+		   program.addSourceLine(lineNumber, line);
+	   }
 	   else
-		   program.removeSourceLine(stoi(token));
+	   {
+		   program.removeSourceLine(lineNumber);
+	   }
    }
    else
 	   error("Invalid input");

@@ -56,5 +56,17 @@ int precedence(std::string token) {
 
 Statement* parseStatement(TokenScanner& scanner)
 {
+	string statementType = scanner.nextToken();
+	if (statementType == "PRINT") return new PrintStmt(scanner);
+	if (statementType == "REM") return new RemStmt(scanner);
+	if (statementType == "LET") return new LetStmt(scanner);
+	if (statementType == "INPUT") return new InputStmt(scanner);
+	if (statementType == "GOTO") return new GotoStmt(scanner);
+	if (statementType == "IF") return new IfStmt(scanner);
+	if (statementType == "END") return new EndStmt(scanner);
+	if (scanner.hasMoreTokens()) {
+		error("Unexpected token \"" + scanner.nextToken() + "\"" + ", will return EndStmt");
+	}
+	return new EndStmt(scanner);
 
 }

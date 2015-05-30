@@ -7,10 +7,7 @@
  * of each of these methods with an implementation that satisfies
  * the performance guarantees specified in the assignment.
  */
-
-#include <string>
 #include "program.h"
-#include "statement.h"
 using namespace std;
 
 Program::Program() {
@@ -19,12 +16,20 @@ Program::Program() {
 
 Program::~Program() {
    // Replace this stub with your own code
+	clear();
 }
 
 void Program::clear() {
    // Replace this stub with your own code
-	strings_.clear();
-	statements_.clear();
+	if (!statements_.empty())
+	{
+		strings_.clear();
+		for (auto statement : statements_)
+		{
+			delete &statement;
+		}
+		statements_.clear();
+	}
 }
 
 void Program::addSourceLine(int lineNumber, string line) {
@@ -32,7 +37,6 @@ void Program::addSourceLine(int lineNumber, string line) {
 	if (strings_.find(lineNumber) == strings_.end())
 	{
 		strings_.emplace(lineNumber, line);
-		//TODO: Figure out how to emplace a Statement in statements_
 	}
 	else
 		strings_.find(lineNumber)->second = line;
@@ -41,8 +45,12 @@ void Program::addSourceLine(int lineNumber, string line) {
 
 void Program::removeSourceLine(int lineNumber) {
    // Replace this stub with your own code
-	strings_.erase(strings_.find(lineNumber));
-	//statements_.erase(statements_.find(lineNumber));
+	if (strings_.find(lineNumber) != strings_.end())
+	{
+		strings_.erase(strings_.find(lineNumber));
+		delete statements_.find(lineNumber)->second;
+		statements_.erase(statements_.find(lineNumber));
+	}
 }
 
 string Program::getSourceLine(int lineNumber) {
@@ -56,9 +64,14 @@ string Program::getSourceLine(int lineNumber) {
 
 void Program::setParsedStatement(int lineNumber, Statement *stmt) {
    // Replace this stub with your own code
-	statements_.emplace(lineNumber, stmt);
-	//TODO:
-	//strings_.emplace(lineNumber, stmt->toString());
+
+	if (statements_.find(lineNumber) == statements_.end())
+	{
+		statements_.emplace(lineNumber, stmt);
+	}
+	else
+		statements_.find(lineNumber)->second = stmt;
+
 }
 
 Statement *Program::getParsedStatement(int lineNumber) {
@@ -84,5 +97,5 @@ int Program::getNextLineNumber(int lineNumber) {
 	if (it != strings_.end())
 		return it->first;
 	else
-		return 0;
+		return -1;
 }

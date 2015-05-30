@@ -79,7 +79,10 @@ public:
 	void setValue(std::string var, int value);
 	int getValue(std::string var);
 	bool isDefined(std::string var);
+	void setCurrentLine(int line) { currentLine_ = line; }
+	int getCurrentLine() const { return currentLine_; }
 private:
+	int currentLine_;
 	Map<std::string, int> symbolTable;
 };
 #endif
